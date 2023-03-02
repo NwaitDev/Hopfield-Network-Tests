@@ -9,10 +9,14 @@ def failMessage(testName, actual, expected):
 def passMessage(testName):
 	print(Fore.GREEN + "[✔] : %s"%(testName)+Style.RESET_ALL)
 
-def printThatMatrix(matrix):
-	cmap = ListedColormap(["white", "black"])
+def printThatMatrix(matrix, title=None):
+	cmap = ListedColormap(["black","white"])
 	imgplot = plt.imshow(matrix,cmap=cmap)
-	plt.show()
+	if title!=None:
+		plt.title(title)
+		plt.show()
+	else:
+		plt.show()
 
 
 def test(testName, actual, expected=True):

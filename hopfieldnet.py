@@ -1,6 +1,6 @@
 import numpy as np
 import src.imageToMatrix as itm
-
+import random as rd
 
 """
 We need :
@@ -19,6 +19,7 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 	Creates a matrix representing the wheights of 
 	the edges between nodes of the network that stores the 
 	images from the imgSet
+	TODO: optimize it ?
 	"""
 	assert len(imgSet) != 0
 	assert np.all(np.array([np.shape(x)==(imgWidth,imgHeight) for x in imgSet]))
@@ -36,7 +37,7 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 	network = mean_v(network) 
 	return network
 
-def applyNetwork(inputImg, networkMatrix):
+def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	"""
 	Computes one iteration of the application 
 	of the hopfield network to the input image 
@@ -44,7 +45,13 @@ def applyNetwork(inputImg, networkMatrix):
 	of the images stored in the network
 	TODO: no implementation yet
 	"""
-	return np.zeros(imgSize)
+	
+	if (synchronous):
+		return np.product(inputImg,networkMatrix)
+	outputImg = np.copy(inputImg)
+	i = rd.randint(0, np.shape(inputImg)[0]-1)
+	outputImg[i] = np.dot(inputImg, networkMatrix[i])
+	return outputImg
 
 def retrieveImage(inputImg, networkMatrix, synchronous=False):
 	"""
