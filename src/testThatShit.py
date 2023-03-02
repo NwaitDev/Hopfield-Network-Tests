@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from colorama import Fore, Style
+from matplotlib.colors import ListedColormap
 
 def failMessage(testName, actual, expected):
 	print(Fore.RED + "[✗] : %s\nactual :\n%s\nexpected :\n%s"%(testName,str(actual),str(expected))+Style.RESET_ALL)
@@ -9,7 +10,8 @@ def passMessage(testName):
 	print(Fore.GREEN + "[✔] : %s"%(testName)+Style.RESET_ALL)
 
 def printThatMatrix(matrix):
-	imgplot = plt.imshow(matrix)
+	cmap = ListedColormap(["white", "black"])
+	imgplot = plt.imshow(matrix,cmap=cmap)
 	plt.show()
 
 

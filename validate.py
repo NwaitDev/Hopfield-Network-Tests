@@ -1,4 +1,4 @@
-from src.testThatShit import test
+from src.testThatShit import test, printThatMatrix
 import numpy as np
 import hopfieldnet as hn
 import src.imageToMatrix as itm
@@ -10,3 +10,4 @@ if __name__ == "__main__":
 	actual = hn.networkFromImages([img],imgHeight=2,imgWidth=2)
 	
 	test("test testing",actual,expected)
+	printThatMatrix(img)
