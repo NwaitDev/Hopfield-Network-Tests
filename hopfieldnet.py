@@ -14,8 +14,14 @@ We need :
 
 zeroToMinusOne_v = np.vectorize(lambda x : 2*x - 1 ) # replaces 0 by -1
 minusOneToZero_v = np.vectorize(lambda x : (x+1)/2 ) # does the opposite
+def threshold(x):
+	if (x>0):
+		return 1
+	return -1
 
-def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
+thresholding_v = np.vectorize(threshold)
+
+def networkFromImages(imgSet, imgWidth=64, imgHeight=64, maxElementVal=1):
 	"""
 	imgSet : array containing int matrices of shape (imgWidth,imgHeight)
 	imgWidth, imgHeight : dimensions of the matrix representing the image
@@ -36,9 +42,11 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 				if(i!=j):
 					network[i][j]+=arr[i]*arr[j]
 	length = len(imgSet)
-	mean_v = np.vectorize(lambda x : x/length)
-	
-	network = mean_v(network) 
+	mean_v = np.vectorize(lambda x : x/(length*maxElementVal))
+	network = mean_v(network)
+	network = thresholding_v(network)
+	for i in range(newShape):
+		network[i][i] = 0
 	return network
 
 def applyNetwork(inputImg, networkMatrix, synchronous=False):
@@ -49,13 +57,12 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	of the images stored in the network
 	TODO: no implementation yet
 	"""
-	inputImg = zeroToMinusOne_v(inputImg)
 	if (synchronous):
-		return minusOneToZero_v(np.product(inputImg,networkMatrix))
+		return thresholding_v(np.product(inputImg,networkMatrix))
 	outputImg = np.copy(inputImg)
 	i = rd.randint(0, np.shape(inputImg)[0]-1)
 	outputImg[i] = np.dot(inputImg, networkMatrix[i])
-	return minusOneToZero_v(outputImg)
+	return outputImg
 
 def retrieveImage(inputImg, networkMatrix, synchronous=False):
 	"""
