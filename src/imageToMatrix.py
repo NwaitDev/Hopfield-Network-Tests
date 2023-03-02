@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-print(os.getcwd())  
-
 def importToMatrix(path, convTo= 'greyscale'):
 	img = Image.open(path)
 	if(convTo == 'greyscale'):
@@ -24,7 +22,8 @@ def rgbMatrixToGreyScale(rgbMatrix):
 			arr.append(rgbToGreyScale(rgbMatrix[i][j]))
 	return np.resize(np.array(arr),(64,64))
 
-arr = importToMatrix('./img-data/eye64x64.jpg', 'blackAndWhite')
-
-imgplot = plt.imshow(arr)
-plt.show()
+if __name__ == "__main__":
+	print(os.getcwd())
+	arr = importToMatrix('./img-data/eye64x64.jpg', 'blackAndWhite')
+	imgplot = plt.imshow(arr)
+	plt.show()
