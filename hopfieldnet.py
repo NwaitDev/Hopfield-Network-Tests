@@ -12,6 +12,9 @@ We need :
 	- an interface function that allows to use the functionnalities of this API
 """
 
+zeroToMinusOne_v = np.vectorize(lambda x : 2*x - 1 ) # replaces 0 by -1
+minusOneToZero_v = np.vectorize(lambda x : (x+1)/2 ) # does the opposite
+
 def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 	"""
 	imgSet : array containing int matrices of shape (imgWidth,imgHeight)
@@ -34,6 +37,7 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 					network[i][j]+=arr[i]*arr[j]
 	length = len(imgSet)
 	mean_v = np.vectorize(lambda x : x/length)
+	
 	network = mean_v(network) 
 	return network
 
@@ -45,13 +49,13 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	of the images stored in the network
 	TODO: no implementation yet
 	"""
-	
+	inputImg = zeroToMinusOne_v(inputImg)
 	if (synchronous):
-		return np.product(inputImg,networkMatrix)
+		return minusOneToZero_v(np.product(inputImg,networkMatrix))
 	outputImg = np.copy(inputImg)
 	i = rd.randint(0, np.shape(inputImg)[0]-1)
 	outputImg[i] = np.dot(inputImg, networkMatrix[i])
-	return outputImg
+	return minusOneToZero_v(outputImg)
 
 def retrieveImage(inputImg, networkMatrix, synchronous=False):
 	"""

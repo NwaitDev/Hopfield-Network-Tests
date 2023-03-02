@@ -5,6 +5,7 @@ import src.imageToMatrix as itm
 
 
 def basicTestSmallImage():
+	#should fail once we replace the zeros by minus ones
 	img = [[0,1],[0,1]]
 	expected = np.array([[0,0,0,0],[0,0,0,1],[0,0,0,0],[0,1,0,0]])
 	actual = hn.networkFromImages([img],imgHeight=2,imgWidth=2)
