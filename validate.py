@@ -3,8 +3,10 @@ import numpy as np
 import hopfieldnet as hn
 import src.imageToMatrix as itm
 
-path = "img-data/eye64x64.jpg"
 
-img = itm.importToMatrix(path,convTo='blackAndWhite')
-
-test("test test", hn.networkFromImages([img]))
+if __name__ == "__main__":
+	img = [[0,1],[0,1]]
+	expected = np.array([[0,0,0,0],[0,0,0,1],[0,0,0,0],[0,1,0,0]])
+	actual = hn.networkFromImages([img],imgHeight=2,imgWidth=2)
+	
+	test("test testing",actual,expected)

@@ -12,20 +12,21 @@ We need :
 	- an interface function that allows to use the functionnalities of this API
 """
 
-def networkFromImages(imgSet, imgSize=64):
+def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 	"""
-	imgSet : array containing int matrix of shape (imgSize,imgSize)
-	imgSize : number of pixels in a line of the image
+	imgSet : array containing int matrices of shape (imgWidth,imgHeight)
+	imgWidth, imgHeight : dimensions of the matrix representing the image
 	Creates a matrix representing the wheights of 
 	the edges between nodes of the network that stores the 
-	image data from the imgSet
+	images from the imgSet
 	TODO: no implementation yet
 	"""
 	assert len(imgSet) != 0
-	network = np.zeros((imgSize**2, imgSize**2))
+	assert np.all(np.array([np.shape(x)==(imgWidth,imgHeight) for x in imgSet]))
+
+	network = np.zeros((imgWidth*imgHeight, imgWidth*imgHeight))
+	newShape = imgWidth*imgHeight
 	for arr in imgSet:
-		(rows, columns) = np.shape(arr)
-		newShape = rows * columns
 		arr = np.resize(arr,newShape)
 		for i in range(newShape):
 			for j in range(newShape):

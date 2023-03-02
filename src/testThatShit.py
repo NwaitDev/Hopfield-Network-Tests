@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from colorama import Fore, Style
 
 def failMessage(testName, actual, expected):
@@ -6,6 +7,11 @@ def failMessage(testName, actual, expected):
 
 def passMessage(testName):
 	print(Fore.GREEN + "[✔] : %s"%(testName)+Style.RESET_ALL)
+
+def printThatMatrix(matrix):
+	imgplot = plt.imshow(matrix)
+	plt.show()
+
 
 def test(testName, actual, expected=True):
 	if(type(actual)!=type(expected)):
