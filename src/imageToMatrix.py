@@ -5,8 +5,14 @@ import os
 
 print(os.getcwd())  
 
-img = Image.open(r"img-data/smile64x64.jpg")
-arr = np.array(img)
+def importToMatrix(path, convTo= 'greyscale'):
+	img = Image.open(path)
+	if(convTo == 'greyscale'):
+		img = img.convert('L')
+	elif(convTo == 'blackAndWhite'):
+		img = img.convert('1')
+	arr = np.array(img)
+	return arr
 
 def rgbToGreyScale(rgbArray):
 	return (int(rgbArray[0])+int(rgbArray[1])+int(rgbArray[2]))/(3.0*255)
@@ -18,8 +24,7 @@ def rgbMatrixToGreyScale(rgbMatrix):
 			arr.append(rgbToGreyScale(rgbMatrix[i][j]))
 	return np.resize(np.array(arr),(64,64))
 
-arr = rgbMatrixToGreyScale(arr)
+arr = importToMatrix('./img-data/eye64x64.jpg', 'blackAndWhite')
 
-plt.figure()
-plt.imshow(arr)
+imgplot = plt.imshow(arr)
 plt.show()
