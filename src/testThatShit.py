@@ -2,12 +2,10 @@ import numpy as np
 from colorama import Fore, Style
 
 def failMessage(testName, actual, expected):
-	print(Fore.RED + "[✗] : %s\nactual :\n%s\nexpected :\n%s"%(testName,str(actual),str(expected)))
-	print(Style.RESET_ALL)
+	print(Fore.RED + "[✗] : %s\nactual :\n%s\nexpected :\n%s"%(testName,str(actual),str(expected))+Style.RESET_ALL)
 
 def passMessage(testName):
-	print(Fore.GREEN + "[✔] : %s"%(testName))
-	print(Style.RESET_ALL)
+	print(Fore.GREEN + "[✔] : %s"%(testName)+Style.RESET_ALL)
 
 def test(testName, actual, expected=True):
 	if(type(actual)!=type(expected)):
