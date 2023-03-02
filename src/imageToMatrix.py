@@ -20,4 +20,6 @@ def rgbMatrixToGreyScale(rgbMatrix):
 
 arr = rgbMatrixToGreyScale(arr)
 
-imgplot = plt.imshow(arr)
+plt.figure()
+plt.imshow(arr)
+plt.show()
