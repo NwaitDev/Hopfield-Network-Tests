@@ -19,7 +19,6 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 	Creates a matrix representing the wheights of 
 	the edges between nodes of the network that stores the 
 	images from the imgSet
-	TODO: no implementation yet
 	"""
 	assert len(imgSet) != 0
 	assert np.all(np.array([np.shape(x)==(imgWidth,imgHeight) for x in imgSet]))
@@ -27,11 +26,11 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 	network = np.zeros((imgWidth*imgHeight, imgWidth*imgHeight))
 	newShape = imgWidth*imgHeight
 	for arr in imgSet:
-		arr = np.resize(arr,newShape)
+		arr = np.resize(arr,newShape).astype('int')
 		for i in range(newShape):
 			for j in range(newShape):
 				if(i!=j):
-					network[i][j]+=int(arr[i])*int(arr[j])
+					network[i][j]+=arr[i]*arr[j]
 	length = len(imgSet)
 	mean_v = np.vectorize(lambda x : x/length)
 	network = mean_v(network) 
