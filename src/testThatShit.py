@@ -4,6 +4,7 @@ from colorama import Fore, Style
 from matplotlib.colors import ListedColormap
 
 
+
 def failMessage(testName, actual, expected):
 	print(Fore.RED + "[✗] : %s\nactual :\n%s\nexpected :\n%s"%(testName,str(actual),str(expected))+Style.RESET_ALL)
 
