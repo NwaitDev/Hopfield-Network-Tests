@@ -1,6 +1,7 @@
 import numpy as np
 import src.imageToMatrix as itm
 import random as rd
+import pickle as pk
 
 """
 We need :
@@ -45,6 +46,13 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64, maxElementVal=1):
 					network[i][j]+=arr[i]*arr[j]
 	network = thresholding_v(network)
 	return network
+
+def dumpNetwork(network, path):
+	"""
+	Dumps the network matrix to a file
+	"""
+	with open("network.pk", "wb") as f:
+		pk.dump(network, f)
 
 def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	"""

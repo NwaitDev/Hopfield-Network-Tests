@@ -2,6 +2,7 @@ from src.testThatShit import test, printThatMatrix
 import numpy as np
 import hopfieldnet as hn
 import src.imageToMatrix as itm
+import pickle as pk
 
 
 def basicTestSmallImage():
@@ -18,25 +19,39 @@ def basicTestSmallImage():
 		img2 = hn.applyNetwork(img2, network)
 		printThatMatrix(np.reshape(img2,(2,2)))
 	
-
-if __name__ == "__main__":
-
-	path1 = "img-data/L8x8.jpg"
-	path2 = "img-data/O8x8.jpg"
+def trainAndDumpNetwork():
+	path1 = "img-data/eye64x64.jpg"
+	path2 = "img-data/smile64x64.jpg"
 	img1 = itm.importToMatrix(path1)
 	img2 = itm.importToMatrix(path2)
-
-	partialImg = np.zeros((8,8))
-	for i in range(int(len(img2)/2)) :
-		partialImg[i] = img2[i]
 	
+	network = hn.networkFromImages([img1,img2],imgHeight=imgToRetrieve.shape[0],imgWidth=imgToRetrieve.shape[1])
+	printThatMatrix(network, "NETWORK")
+	hn.dumpNetwork(network,"network.pk")
+
+def retrieveImage(partialImg):
+	shape = partialImg.shape
+	network = None
+	with open("network.pk", "rb") as f:
+		network = pk.load(f)
+
+	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
+	for i in range(50000):
+		partialImg = hn.applyNetwork(partialImg,network)
+		if(i%1000==0): 
+			printThatMatrix(np.reshape(partialImg,(shape[0],shape[1])))
+
+def randomizeMatrix(shape):
+	return hn.zeroToMinusOne_v(np.random.randint(0,2,shape))
+
+if __name__ == "__main__":
+	
+	#trainAndDumpNetwork()
+
+	imgToRetrieve = itm.importToMatrix("img-data/eye64x64.jpg")
+	partialImg = randomizeMatrix(imgToRetrieve.shape)
+	#for i in range(int(len(imgToRetrieve)/2)) :
+	#	partialImg[i] = imgToRetrieve[i]
 	printThatMatrix(partialImg, "PARTIAL")
 	
-	network = hn.networkFromImages([img1,img2],imgHeight=8,imgWidth=8)
-	printThatMatrix(network)
-	partialImg = np.reshape(partialImg, (8*8,))
-	for i in range(300):
-		partialImg = hn.applyNetwork(partialImg,network)
-		if(i%30==0): 
-			printThatMatrix(np.reshape(partialImg,(8,8)))
-	
+	retrieveImage(partialImg)
