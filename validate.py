@@ -24,8 +24,8 @@ def trainAndDumpNetwork():
 	path2 = "img-data/smile64x64.jpg"
 	img1 = itm.importToMatrix(path1)
 	img2 = itm.importToMatrix(path2)
-	
-	network = hn.networkFromImages([img1,img2],imgHeight=imgToRetrieve.shape[0],imgWidth=imgToRetrieve.shape[1])
+
+	network = hn.networkFromImages([img1,img2],imgHeight=img1.shape[0],imgWidth=img1.shape[1])
 	printThatMatrix(network, "NETWORK")
 	hn.dumpNetwork(network,"network.pk")
 
@@ -38,7 +38,7 @@ def retrieveImage(partialImg):
 	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
 	for i in range(50000):
 		partialImg = hn.applyNetwork(partialImg,network)
-		if(i%1000==0): 
+		if(i%2000==0): 
 			printThatMatrix(np.reshape(partialImg,(shape[0],shape[1])))
 
 def randomizeMatrix(shape):
@@ -47,11 +47,13 @@ def randomizeMatrix(shape):
 if __name__ == "__main__":
 	
 	#trainAndDumpNetwork()
-
+#'''
 	imgToRetrieve = itm.importToMatrix("img-data/eye64x64.jpg")
-	partialImg = randomizeMatrix(imgToRetrieve.shape)
-	#for i in range(int(len(imgToRetrieve)/2)) :
-	#	partialImg[i] = imgToRetrieve[i]
+	#partialImg = randomizeMatrix(imgToRetrieve.shape)
+	partialImg = np.zeros(imgToRetrieve.shape)
+	for i in range(int(len(imgToRetrieve)/2)) :
+		partialImg[i] = imgToRetrieve[i]
 	printThatMatrix(partialImg, "PARTIAL")
 	
 	retrieveImage(partialImg)
+#'''
