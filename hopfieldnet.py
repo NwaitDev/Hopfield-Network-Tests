@@ -1,6 +1,7 @@
 import numpy as np
 import src.imageToMatrix as itm
 import random as rd
+import pickle as pk
 
 """
 We need :
@@ -14,8 +15,16 @@ We need :
 
 zeroToMinusOne_v = np.vectorize(lambda x : 2*x - 1 ) # replaces 0 by -1
 minusOneToZero_v = np.vectorize(lambda x : (x+1)/2 ) # does the opposite
+def threshold(x):
+	if (x>0):
+		return 1
+	if (x<0):
+		return -1
+	return 0
 
-def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
+thresholding_v = np.vectorize(threshold)
+
+def networkFromImages(imgSet, imgWidth=64, imgHeight=64, maxElementVal=1):
 	"""
 	imgSet : array containing int matrices of shape (imgWidth,imgHeight)
 	imgWidth, imgHeight : dimensions of the matrix representing the image
@@ -35,11 +44,15 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 			for j in range(newShape):
 				if(i!=j):
 					network[i][j]+=arr[i]*arr[j]
-	length = len(imgSet)
-	mean_v = np.vectorize(lambda x : x/length)
-	
-	network = mean_v(network) 
+	network = thresholding_v(network)
 	return network
+
+def dumpNetwork(network, path):
+	"""
+	Dumps the network matrix to a file
+	"""
+	with open("network.pk", "wb") as f:
+		pk.dump(network, f)
 
 def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	"""
@@ -49,13 +62,16 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	of the images stored in the network
 	TODO: no implementation yet
 	"""
-	inputImg = zeroToMinusOne_v(inputImg)
 	if (synchronous):
-		return minusOneToZero_v(np.product(inputImg,networkMatrix))
+		#return the thresholding of the product of the input image and the network matrix
+		return thresholding_v(np.product(inputImg,networkMatrix))
+	#copy the input image to compare the next state with the last state to check for convergence
 	outputImg = np.copy(inputImg)
+	#choose a random pixel to update
 	i = rd.randint(0, np.shape(inputImg)[0]-1)
-	outputImg[i] = np.dot(inputImg, networkMatrix[i])
-	return minusOneToZero_v(outputImg)
+	#update the pixel i
+	outputImg[i] = thresholding_v(np.dot(inputImg, networkMatrix[i]))
+	return outputImg
 
 def retrieveImage(inputImg, networkMatrix, synchronous=False):
 	"""
