@@ -20,24 +20,23 @@ def basicTestSmallImage():
 	
 
 if __name__ == "__main__":
-	basicTestSmallImage()
 
-def old():
 	path1 = "img-data/L8x8.jpg"
 	path2 = "img-data/O8x8.jpg"
 	img1 = itm.importToMatrix(path1)
 	img2 = itm.importToMatrix(path2)
 
 	partialImg = np.zeros((8,8))
-	for i in range(int(len(img1)/2)) :
-		partialImg[i] = img1[i]
+	for i in range(int(len(img2)/2)) :
+		partialImg[i] = img2[i]
 	
 	printThatMatrix(partialImg, "PARTIAL")
 	
-	network = hn.networkFromImages([img1],imgHeight=8,imgWidth=8)
+	network = hn.networkFromImages([img1,img2],imgHeight=8,imgWidth=8)
 	printThatMatrix(network)
 	partialImg = np.reshape(partialImg, (8*8,))
-	for i in range(100):
+	for i in range(300):
 		partialImg = hn.applyNetwork(partialImg,network)
-	printThatMatrix(np.reshape(partialImg,(8,8)))
+		if(i%30==0): 
+			printThatMatrix(np.reshape(partialImg,(8,8)))
 	

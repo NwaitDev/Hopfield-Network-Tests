@@ -17,7 +17,9 @@ minusOneToZero_v = np.vectorize(lambda x : (x+1)/2 ) # does the opposite
 def threshold(x):
 	if (x>0):
 		return 1
-	return -1
+	if (x<0):
+		return -1
+	return 0
 
 thresholding_v = np.vectorize(threshold)
 
@@ -41,12 +43,7 @@ def networkFromImages(imgSet, imgWidth=64, imgHeight=64, maxElementVal=1):
 			for j in range(newShape):
 				if(i!=j):
 					network[i][j]+=arr[i]*arr[j]
-	length = len(imgSet)
-	mean_v = np.vectorize(lambda x : x/(length*maxElementVal))
-	network = mean_v(network)
 	network = thresholding_v(network)
-	for i in range(newShape):
-		network[i][i] = 0
 	return network
 
 def applyNetwork(inputImg, networkMatrix, synchronous=False):
@@ -58,10 +55,14 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	TODO: no implementation yet
 	"""
 	if (synchronous):
+		#return the thresholding of the product of the input image and the network matrix
 		return thresholding_v(np.product(inputImg,networkMatrix))
+	#copy the input image to compare the next state with the last state to check for convergence
 	outputImg = np.copy(inputImg)
+	#choose a random pixel to update
 	i = rd.randint(0, np.shape(inputImg)[0]-1)
-	outputImg[i] = np.dot(inputImg, networkMatrix[i])
+	#update the pixel i
+	outputImg[i] = thresholding_v(np.dot(inputImg, networkMatrix[i]))
 	return outputImg
 
 def retrieveImage(inputImg, networkMatrix, synchronous=False):
