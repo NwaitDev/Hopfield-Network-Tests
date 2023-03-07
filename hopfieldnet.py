@@ -15,6 +15,7 @@ We need :
 
 zeroToMinusOne_v = np.vectorize(lambda x : 2*x - 1 ) # replaces 0 by -1
 minusOneToZero_v = np.vectorize(lambda x : (x+1)/2 ) # does the opposite
+flip_v = np.vectorize(lambda x : -x) # flips the sign of the input
 def threshold(x):
 	if (x>0):
 		return 1
@@ -53,13 +54,32 @@ def dumpNetwork(network, path):
 	"""
 	with open("network.pk", "wb") as f:
 		pk.dump(network, f)
+  
+  
+def energyFunc(x: np.ndarray[np.float64, 1], imglist, func = np.exp):
+	s = 0	
+	for img in imglist:
+		s += func(np.dot(x, img))
+	return - s
 
-def applyNetwork(inputImg, networkMatrix, synchronous=False):
+'''
+'''
+
+def newPixelWithModernNetwork(inputImg: np.ndarray[np.float64, 2]):
+	path1 = "img-data/eye64x64.jpg"
+	path2 = "img-data/smile64x64.jpg"
+	img1 = np.reshape(itm.importToMatrix(path1), (64*64, 1))
+	img2 = np.reshape(itm.importToMatrix(path2), (64*64, 1))
+
+	return threshold(-energyFunc(inputImg, [img1, img2])+ energyFunc(flip_v(inputImg), [img1, img2]))
+    
+
+def applyNetwork(inputImg : np.ndarray[np.float64], networkMatrix : np.ndarray[np.float64, 2], synchronous=False):
 	"""
-	Computes one iteration of the application 
+	Computes one iteration of the application
 	of the hopfield network to the input image 
 	this should get a result closer to one 
-	of the images stored in the network
+	of the images stored in the networkZ
 	TODO: no implementation yet
 	"""
 	if (synchronous):
@@ -70,7 +90,7 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	#choose a random pixel to update
 	i = rd.randint(0, np.shape(inputImg)[0]-1)
 	#update the pixel i
-	outputImg[i] = thresholding_v(np.dot(inputImg, networkMatrix[i]))
+	outputImg[i] = newPixelWithModernNetwork(inputImg)
 	return outputImg
 
 def retrieveImage(inputImg, networkMatrix, synchronous=False):

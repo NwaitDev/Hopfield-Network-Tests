@@ -29,13 +29,13 @@ def trainAndDumpNetwork():
 	printThatMatrix(network, "NETWORK")
 	hn.dumpNetwork(network,"network.pk")
 
-def retrieveImage(partialImg):
+def retrieveImage(partialImg : np.ndarray[np.float64]):
 	shape = partialImg.shape
 	network = None
 	with open("network.pk", "rb") as f:
 		network = pk.load(f)
 
-	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
+	partialImg : np.ndarray[np.float64] = np.reshape(partialImg, (shape[0]*shape[1],))
 	for i in range(50000):
 		partialImg = hn.applyNetwork(partialImg,network)
 		if(i%2000==0): 
