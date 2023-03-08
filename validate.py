@@ -1,4 +1,4 @@
-from src.testThatShit import test, printThatMatrix
+from src.testThatShit import test, printThatMatrix, PrintMatricesInGrid
 import numpy as np
 import hopfieldnet as hn
 import src.imageToMatrix as itm
@@ -35,11 +35,16 @@ def retrieveImage(partialImg):
 	with open("network.pk", "rb") as f:
 		network = pk.load(f)
 
+	iters = 50000
+	matrices = []
+
 	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
-	for i in range(50000):
+	for i in range(iters):
 		partialImg = hn.applyNetwork(partialImg,network)
-		if(i%2000==0): 
-			printThatMatrix(np.reshape(partialImg,(shape[0],shape[1])))
+		if(i%(iters//11)==0): 
+			matrices.append(np.reshape(partialImg,(shape[0],shape[1])))
+	
+	PrintMatricesInGrid(matrices)
 
 def randomizeMatrix(shape):
 	return hn.zeroToMinusOne_v(np.random.randint(0,2,shape))

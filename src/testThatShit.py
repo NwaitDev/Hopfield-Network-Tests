@@ -20,6 +20,28 @@ def printThatMatrix(matrix, title=None):
 	else:
 		plt.show()
 
+def PrintMatricesInGrid(matrices):
+	cmap = ListedColormap(["black","white"])
+	
+	rows = 3
+	cols = len(matrices)//3
+	if len(matrices)%10!=0:
+		cols+=1
+
+	print(len(matrices))
+	
+	fig, axes = plt.subplots(rows,cols)
+
+	if isinstance(axes, np.ndarray):
+		list_axes = list(axes.flat)
+	else:
+		list_axes = [axes]
+	
+	for i in range(len(matrices)):
+		list_axes[i].imshow(matrices[i], cmap=cmap)
+	
+	fig.tight_layout()
+	plt.show()
 
 def test(testName, actual, expected=True):
 	if(type(actual)!=type(expected)):
