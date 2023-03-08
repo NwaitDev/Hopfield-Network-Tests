@@ -23,9 +23,3 @@ def rgbMatrixToGreyScale(rgbMatrix):
 		for j in range(len(rgbMatrix[i])):
 			arr.append(rgbToGreyScale(rgbMatrix[i][j]))
 	return np.resize(np.array(arr),(64,64))
-
-if __name__ == "__main__":
-	print(os.getcwd())
-	arr = importToMatrix('./img-data/eye64x64.jpg', 'blackAndWhite')
-	imgplot = plt.imshow(arr)
-	plt.show()

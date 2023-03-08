@@ -1,7 +1,8 @@
 import numpy as np
-import src.imageToMatrix as itm
 import random as rd
 import pickle as pk
+import src.imageToMatrix as itm
+from src.pltlib import printThatMatrix, PrintMatricesInGrid
 
 """
 We need :
@@ -24,7 +25,21 @@ def threshold(x):
 
 thresholding_v = np.vectorize(threshold)
 
-def networkFromImages(imgSet, imgWidth=64, imgHeight=64, maxElementVal=1):
+def trainAndDumpNetwork():
+	path1 = "../img-data/eye64x64.jpg"
+	path2 = "../img-data/smile64x64.jpg"
+	img1 = itm.importToMatrix(path1)
+	img2 = itm.importToMatrix(path2)
+
+	network = networkFromImages([img1,img2],imgHeight=img1.shape[0],imgWidth=img1.shape[1])
+	printThatMatrix(network, "NETWORK")
+	dumpNetwork(network,"network.pk")
+	return network
+
+def randomizeMatrix(shape):
+	return zeroToMinusOne_v(np.random.randint(0,2,shape))
+
+def networkFromImages(imgSet, imgWidth=64, imgHeight=64):
 	"""
 	imgSet : array containing int matrices of shape (imgWidth,imgHeight)
 	imgWidth, imgHeight : dimensions of the matrix representing the image
@@ -51,7 +66,7 @@ def dumpNetwork(network, path):
 	"""
 	Dumps the network matrix to a file
 	"""
-	with open("network.pk", "wb") as f:
+	with open(path, "wb") as f:
 		pk.dump(network, f)
 
 def applyNetwork(inputImg, networkMatrix, synchronous=False):
@@ -60,7 +75,6 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	of the hopfield network to the input image 
 	this should get a result closer to one 
 	of the images stored in the network
-	TODO: no implementation yet
 	"""
 	if (synchronous):
 		#return the thresholding of the product of the input image and the network matrix
@@ -73,10 +87,24 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	outputImg[i] = thresholding_v(np.dot(inputImg, networkMatrix[i]))
 	return outputImg
 
-def retrieveImage(inputImg, networkMatrix, synchronous=False):
+def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8):
 	"""
-	Computes an image that is stored in the networkMatrix
-	based on the input image. By default, it is updating the values of randomly, one by one.
-	TODO: no implementation yet
+	apply the network loaded from networkPath on n iterations on the input image. 
 	"""
-	return np.zeros(imgSize)
+	shape = partialImg.shape
+	network = None
+	with open(networkPath, "rb") as f:
+		network = pk.load(f)
+
+	iters = iterations
+	matrices = []
+	itersToSave = iters//stepsToPrint
+	print("itersToSave : ",itersToSave)
+
+	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
+	for i in range(iters):
+		partialImg = applyNetwork(partialImg,network)
+		if(i%itersToSave==0): 
+			matrices.append(np.reshape(partialImg,(shape[0],shape[1])))
+	return matrices
+	

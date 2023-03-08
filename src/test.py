@@ -1,47 +1,13 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from pltlib import printThatMatrix
+import hopfieldnet as hn
 from colorama import Fore, Style
-from matplotlib.colors import ListedColormap
-
-
 
 def failMessage(testName, actual, expected):
 	print(Fore.RED + "[✗] : %s\nactual :\n%s\nexpected :\n%s"%(testName,str(actual),str(expected))+Style.RESET_ALL)
 
 def passMessage(testName):
 	print(Fore.GREEN + "[✔] : %s"%(testName)+Style.RESET_ALL)
-
-def printThatMatrix(matrix, title=None):
-	cmap = ListedColormap(["black","white"])
-	imgplot = plt.imshow(matrix,cmap=cmap)
-	if title!=None:
-		plt.title(title)
-		plt.show()
-	else:
-		plt.show()
-
-def PrintMatricesInGrid(matrices):
-	cmap = ListedColormap(["black","white"])
-	
-	rows = 3
-	cols = len(matrices)//3
-	if len(matrices)%10!=0:
-		cols+=1
-
-	print(len(matrices))
-	
-	fig, axes = plt.subplots(rows,cols)
-
-	if isinstance(axes, np.ndarray):
-		list_axes = list(axes.flat)
-	else:
-		list_axes = [axes]
-	
-	for i in range(len(matrices)):
-		list_axes[i].imshow(matrices[i], cmap=cmap)
-	
-	fig.tight_layout()
-	plt.show()
 
 def test(testName, actual, expected=True):
 	if(type(actual)!=type(expected)):
@@ -66,6 +32,21 @@ def test(testName, actual, expected=True):
 		passMessage(testName)
 		return
 	failMessage(testName, actual, expected)
+
+
+def basicTestSmallImage():
+	#should fail once we replace the zeros by minus ones
+	img = [[0,1],[0,1]]
+	expected = np.array([[0,-1,-1,-1],[-1,0,-1,1],[-1,-1,0,-1],[-1,1,-1,0]])
+	network = hn.networkFromImages([img],imgHeight=2,imgWidth=2)
+	
+	test("test Small image",network,expected)
+	printThatMatrix(img)
+	printThatMatrix(network)
+	img2 = [0,0,0,0]
+	for i in range(10):
+		img2 = hn.applyNetwork(img2, network)
+		printThatMatrix(np.reshape(img2,(2,2)))
 
 if __name__ == "__main__":
 	test("equality", 1,1)
