@@ -99,7 +99,6 @@ def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8)
 	iters = iterations
 	matrices = []
 	itersToSave = iters//stepsToPrint
-	print("itersToSave : ",itersToSave)
 
 	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
 	for i in range(iters):
