@@ -26,12 +26,14 @@ def threshold(x):
 thresholding_v = np.vectorize(threshold)
 
 def trainAndDumpNetwork():
-	path1 = "../img-data/eye64x64.jpg"
-	path2 = "../img-data/smile64x64.jpg"
+	path1 = "./img-data/simpsons/bart.png"
+	path2 = "./img-data/simpsons/homer.png"
+	path3 = "./img-data/simpsons/lisa.png"
 	img1 = itm.importToMatrix(path1)
 	img2 = itm.importToMatrix(path2)
+	img3 = itm.importToMatrix(path3)
 
-	network = networkFromImages([img1,img2],imgHeight=img1.shape[0],imgWidth=img1.shape[1])
+	network = networkFromImages([img1,img2,img3],imgHeight=img1.shape[0],imgWidth=img1.shape[1])
 	printThatMatrix(network, "NETWORK")
 	dumpNetwork(network,"network.pk")
 	return network
