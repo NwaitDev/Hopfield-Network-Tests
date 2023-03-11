@@ -2,7 +2,7 @@ import numpy as np
 import random as rd
 import pickle as pk
 import src.imageToMatrix as itm
-from src.pltlib import printThatMatrix, PrintMatricesInGrid
+from src.lib import *
 
 """
 We need :
@@ -13,17 +13,6 @@ We need :
 	- a function that iterates over the previous one to compute, step by step the target final image
 	- an interface function that allows to use the functionnalities of this API
 """
-
-zeroToMinusOne_v = np.vectorize(lambda x : 2*x - 1 ) # replaces 0 by -1
-minusOneToZero_v = np.vectorize(lambda x : (x+1)/2 ) # does the opposite
-def threshold(x):
-	if (x>0):
-		return 1
-	if (x<0):
-		return -1
-	return 0
-
-thresholding_v = np.vectorize(threshold)
 
 def trainAndDumpNetwork():
 	path1 = "./img-data/simpsons/bart.png"
@@ -80,8 +69,7 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	"""
 	if (synchronous):
 		#return the thresholding of the product of the input image and the network matrix
-		return thresholding_v(np.product(inputImg,networkMatrix))
-	#copy the input image to compare the next state with the last state to check for convergence
+		return thresholding_v(np.dot(networkMatrix,inputImg))
 	outputImg = np.copy(inputImg)
 	#choose a random pixel to update
 	i = rd.randint(0, np.shape(inputImg)[0]-1)
@@ -89,7 +77,7 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	outputImg[i] = thresholding_v(np.dot(inputImg, networkMatrix[i]))
 	return outputImg
 
-def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8):
+def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8, sync=False):
 	"""
 	apply the network loaded from networkPath on n iterations on the input image. 
 	"""
@@ -98,14 +86,22 @@ def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8)
 	with open(networkPath, "rb") as f:
 		network = pk.load(f)
 
+	if(stepsToPrint>iterations):
+		stepsToPrint = iterations
+
 	iters = iterations
 	matrices = []
-	itersToSave = iters//stepsToPrint
+	itersToSave = iters//(stepsToPrint)
+
+	matrices.append(partialImg)
 
 	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
 	for i in range(iters):
-		partialImg = applyNetwork(partialImg,network)
-		if(i%itersToSave==0): 
-			matrices.append(np.reshape(partialImg,(shape[0],shape[1])))
+		partialImg = applyNetwork(partialImg,network,synchronous=sync)
+		if(i%itersToSave==0 or i==iters-1):
+			if(len(matrices)==stepsToPrint):
+				matrices[stepsToPrint-1] = np.reshape(partialImg,shape)
+			else:
+				matrices.append(np.reshape(partialImg,shape))
 	return matrices
 	

@@ -2,6 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
+zeroToMinusOne = lambda x : 2*x - 1 # replaces 0 by -1
+minusOneToZero = lambda x : (x+1)/2 # does the opposite
+zeroToMinusOne_v = np.vectorize(zeroToMinusOne) # replaces 0 by -1
+minusOneToZero_v = np.vectorize(minusOneToZero) # does the opposite
+
+def threshold(x):
+	if (x>0):
+		return 1
+	if (x<0):
+		return -1
+	return 0
+
+thresholding_v = np.vectorize(threshold)
+
 def printThatMatrix(matrix, title=None):
 	cmap = ListedColormap(["black","white"])
 	imgplot = plt.imshow(matrix,cmap=cmap)
@@ -12,7 +26,7 @@ def printThatMatrix(matrix, title=None):
 		plt.show()
 
 def PrintMatricesInGrid(matrices):
-	
+
 	mLen = len(matrices)
 	mLenSqrt = np.sqrt(mLen)
 	rows = int(mLenSqrt)
@@ -21,7 +35,7 @@ def PrintMatricesInGrid(matrices):
 	cols = len(matrices)//rows
 	if len(matrices)%rows!=0:
 		cols+=1
-
+	
 	cmap = ListedColormap(["black","white"])
 	
 	fig, axes = plt.subplots(rows,cols,figsize=(10,10))

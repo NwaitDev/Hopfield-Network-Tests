@@ -1,5 +1,5 @@
 import src.hopfieldnet as hn
-from src.pltlib import printThatMatrix
+from lib import printThatMatrix
 
 if __name__ == "__main__":
    network = hn.trainAndDumpNetwork()

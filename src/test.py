@@ -1,5 +1,5 @@
 import numpy as np
-from pltlib import printThatMatrix
+from src.lib import printThatMatrix
 import hopfieldnet as hn
 from colorama import Fore, Style
 
