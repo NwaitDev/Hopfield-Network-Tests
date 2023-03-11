@@ -1,7 +1,6 @@
 import numpy as np
 import random as rd
 import pickle as pk
-import src.imageToMatrix as itm
 from src.lib import *
 
 """
@@ -14,17 +13,17 @@ We need :
 	- an interface function that allows to use the functionnalities of this API
 """
 
-def trainAndDumpNetwork():
-	path1 = "./img-data/simpsons/bart.png"
-	path2 = "./img-data/simpsons/homer.png"
-	path3 = "./img-data/simpsons/lisa.png"
-	img1 = itm.importToMatrix(path1)
-	img2 = itm.importToMatrix(path2)
-	img3 = itm.importToMatrix(path3)
+def trainAndDumpNetwork(imgs, modelName="network_unnamed"):
 
-	network = networkFromImages([img1,img2,img3],imgHeight=img1.shape[0],imgWidth=img1.shape[1])
-	printThatMatrix(network, "NETWORK")
-	dumpNetwork(network,"network.pk")
+	if (imgs is None):
+		return None
+
+	network = networkFromImages(imgs,imgHeight=imgs[0].shape[0],imgWidth=imgs[0].shape[1])
+	
+	dumpPath = "./models/"+modelName
+	if(dumpPath[-3:]!=".pk"):
+		dumpPath+=".pk"
+	dumpNetwork(network, dumpPath)
 	return network
 
 def randomizeMatrix(shape):
@@ -88,6 +87,8 @@ def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8,
 
 	if(stepsToPrint>iterations):
 		stepsToPrint = iterations
+
+	print("shapes : ",shape, " ", network.shape)
 
 	iters = iterations
 	matrices = []

@@ -1,6 +1,10 @@
 import src.hopfieldnet as hn
-from lib import printThatMatrix
+from src.lib import *
 
 if __name__ == "__main__":
-   network = hn.trainAndDumpNetwork()
-   printThatMatrix(network, "NETWORK")
+
+   imgs = importImagesFromFolder("./img-data/8x8", 8, 8)
+
+   network = hn.trainAndDumpNetwork(imgs,"network_8x8")
+   print("Network shape : ", network.shape)
+   printThatMatrix(network, "network_8x8")

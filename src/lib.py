@@ -1,6 +1,8 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+import src.imageToMatrix as itm
 
 zeroToMinusOne = lambda x : 2*x - 1 # replaces 0 by -1
 minusOneToZero = lambda x : (x+1)/2 # does the opposite
@@ -15,6 +17,16 @@ def threshold(x):
 	return 0
 
 thresholding_v = np.vectorize(threshold)
+
+def importImagesFromFolder(folderPath, imgWidth=64, imgHeight=64):
+	"""
+	Imports all the images from a folder and returns them as a list of matrices
+	"""
+	images = []
+	for filename in os.listdir(folderPath):
+		if filename.endswith(".png") or filename.endswith(".jpg"):
+			images.append(itm.importToMatrix(folderPath+"/"+filename))
+	return images
 
 def printThatMatrix(matrix, title=None):
 	cmap = ListedColormap(["black","white"])
