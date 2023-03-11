@@ -4,7 +4,7 @@ import src.hopfieldnet as hn
 import src.imageToMatrix as itm
 
 if __name__ == "__main__":
-	imgToRetrieve = itm.importToMatrix("./img-data/8x8/O8x8.jpg")
+	imgToRetrieve = itm.importToMatrix("./img-data/simpsons/homer.png")
 	
 	#partialImg = randomizeMatrix(imgToRetrieve.shape)
 	
@@ -19,5 +19,5 @@ if __name__ == "__main__":
 	
 	#printThatMatrix(partialImg, "PARTIAL")
 	
-	steps = hn.retrieveImage('./models/network_8x8.pk',partialImg, iterations=256, stepsToPrint=9, sync=False)
+	steps = hn.retrieveImage('./models/network_simpsons_allimgs.pk',partialImg, iterations=20000, stepsToPrint=9, sync=False)
 	PrintMatricesInGrid(steps)

@@ -3,8 +3,7 @@ from src.lib import *
 
 if __name__ == "__main__":
 
-   imgs = importImagesFromFolder("./img-data/8x8", 8, 8)
-
-   network = hn.trainAndDumpNetwork(imgs,"network_8x8")
-   print("Network shape : ", network.shape)
-   printThatMatrix(network, "network_8x8")
+   imgs = importImagesFromFolder("./img-data/simpsons", 64,64)
+   network = hn.trainAndDumpNetwork(imgs,"network_simpsons_allimgs")
+   PrintMatricesInGrid(imgs)
+   printThatMatrix(network, "network_trained")
