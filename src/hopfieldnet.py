@@ -59,7 +59,14 @@ def dumpNetwork(network, path):
 	with open(path, "wb") as f:
 		pk.dump(network, f)
 
-def applyNetwork(inputImg, networkMatrix, synchronous=False):
+def loadNetwork(path):
+	"""
+	Loads a network matrix from a file
+	"""
+	with open(path, "rb") as f:
+		return pk.load(f)
+
+def applyNetworkDiscrete(inputImg, networkMatrix, synchronous=False):
 	"""
 	Computes one iteration of the application 
 	of the hopfield network to the input image 
@@ -69,6 +76,7 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	if (synchronous):
 		#return the thresholding of the product of the input image and the network matrix
 		return thresholding_v(np.dot(networkMatrix,inputImg))
+	
 	outputImg = np.copy(inputImg)
 	#choose a random pixel to update
 	i = rd.randint(0, np.shape(inputImg)[0]-1)
@@ -76,14 +84,12 @@ def applyNetwork(inputImg, networkMatrix, synchronous=False):
 	outputImg[i] = thresholding_v(np.dot(inputImg, networkMatrix[i]))
 	return outputImg
 
-def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8, sync=False):
+def retrieveImage(networkPath, partialImg, sync=False, iterations = 20000, stepsToPrint = 8):
 	"""
 	apply the network loaded from networkPath on n iterations on the input image. 
 	"""
 	shape = partialImg.shape
-	network = None
-	with open(networkPath, "rb") as f:
-		network = pk.load(f)
+	network = loadNetwork(networkPath)
 
 	if(stepsToPrint>iterations):
 		stepsToPrint = iterations
@@ -96,9 +102,11 @@ def retrieveImage(networkPath, partialImg, iterations = 20000, stepsToPrint = 8,
 
 	matrices.append(partialImg)
 
+	update = applyNetworkDiscrete
+
 	partialImg = np.reshape(partialImg, (shape[0]*shape[1],))
 	for i in range(iters):
-		partialImg = applyNetwork(partialImg,network,synchronous=sync)
+		partialImg = update(partialImg,network,synchronous=sync)
 		if(i%itersToSave==0 or i==iters-1):
 			if(len(matrices)==stepsToPrint):
 				matrices[stepsToPrint-1] = np.reshape(partialImg,shape)

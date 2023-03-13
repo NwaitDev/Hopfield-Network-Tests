@@ -28,6 +28,16 @@ def importImagesFromFolder(folderPath, imgWidth=64, imgHeight=64):
 			images.append(itm.importToMatrix(folderPath+"/"+filename))
 	return images
 
+def getCroppedImage(img, div=2):
+	croppedImg = np.zeros(img.shape, dtype=int)
+	for i in range(int(len(img)/div)) :
+		croppedImg[i] = img[i]
+	for i in range(int(len(img)/div),len(img)) :
+		randomOrder = np.random.permutation(len(img[0]))
+		for j in randomOrder :
+			croppedImg[i][j] = zeroToMinusOne(np.random.randint(0,2))
+	return croppedImg
+
 def printThatMatrix(matrix, title=None):
 	cmap = ListedColormap(["black","white"])
 	imgplot = plt.imshow(matrix,cmap=cmap)
