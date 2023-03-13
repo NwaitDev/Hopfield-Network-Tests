@@ -38,6 +38,17 @@ def getCroppedImage(img, div=2):
 			croppedImg[i][j] = zeroToMinusOne(np.random.randint(0,2))
 	return croppedImg
 
+def getRandomCroppedImage(img, percent=10):
+	croppedImg = np.zeros(img.shape, dtype=int)
+	for i in range(len(img)) :
+		randomOrder = np.random.permutation(len(img[0]))
+		for j in randomOrder :
+			if np.random.randint(0,100) > percent:
+				croppedImg[i][j] = zeroToMinusOne(np.random.randint(0,2))
+			else:
+				croppedImg[i][j] = img[i][j]
+	return croppedImg
+
 def printThatMatrix(matrix, title=None):
 	cmap = ListedColormap(["black","white"])
 	imgplot = plt.imshow(matrix,cmap=cmap)

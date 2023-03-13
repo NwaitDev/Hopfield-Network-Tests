@@ -28,8 +28,9 @@ def retrieveImage(inputImg, objImg, memories, synchronous=True, maxIter=8, minIt
 
 #fig9
 def energy(img, memories):
-    x = (np.tile(img, (len(memories), 1)) * memories).sum(1)
-    return - F(x, 2.8).sum()
+    x = (np.tile(img, (len(memories), 1)) * memories)
+    x = np.sum(x, axis=1, dtype=object)
+    return - F(x, 8).sum()
 
 def F(x, n):
     '''Rectified polynomial'''
@@ -48,7 +49,6 @@ def updateSync(inputImg, memories):
         energyDiff = energy(newImage, memories) - energy(outputImg, memories)
         if(energyDiff < 0):
             outputImg[i] *= -1
-    printThatMatrix(np.reshape(outputImg, (64,64)), "Output image")
     return outputImg
 
 def updateAsync(inputImg, memories, index):
