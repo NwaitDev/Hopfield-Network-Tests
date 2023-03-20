@@ -7,8 +7,9 @@ import os
 #greyscale is not supported as of now
 def importToMatrix(path, convTo= 'blackAndWhite'):
 	img = Image.open(path)
-	if(convTo == 'greyscale'):
-		img = img.convert('L')
+	if(convTo == 'grayscale'):
+		imgArr = np.array(img.convert('L'))
+		return np.vectorize(lambda x : x / 255 )(imgArr)
 	elif(convTo == 'blackAndWhite'):
 		img = img.convert('1')
 	arr = np.array(img)

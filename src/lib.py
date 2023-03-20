@@ -18,14 +18,14 @@ def threshold(x):
 
 thresholding_v = np.vectorize(threshold)
 
-def importImagesFromFolder(folderPath, imgWidth=64, imgHeight=64):
+def importImagesFromFolder(folderPath, imgWidth=64, imgHeight=64, imgConvType="blackAndWhite"):
 	"""
 	Imports all the images from a folder and returns them as a list of matrices
 	"""
 	images = []
 	for filename in os.listdir(folderPath):
 		if filename.endswith(".png") or filename.endswith(".jpg"):
-			images.append(itm.importToMatrix(folderPath+"/"+filename))
+			images.append(itm.importToMatrix(folderPath+"/"+filename, imgConvType))
 	return images
 
 def getCroppedImage(img, div=2):
@@ -38,20 +38,49 @@ def getCroppedImage(img, div=2):
 			croppedImg[i][j] = zeroToMinusOne(np.random.randint(0,2))
 	return croppedImg
 
-def getRandomCroppedImage(img, percent=10):
-	croppedImg = np.zeros(img.shape, dtype=int)
-	for i in range(len(img)) :
-		randomOrder = np.random.permutation(len(img[0]))
-		for j in randomOrder :
-			if np.random.randint(0,100) > percent:
-				croppedImg[i][j] = zeroToMinusOne(np.random.randint(0,2))
-			else:
-				croppedImg[i][j] = img[i][j]
+def getCroppedImageContinuous(img, div=2):
+	croppedImg = np.copy(img)
+	for i in range(int(len(img)/div),len(img)) :
+		croppedImg[i] = 0.5
 	return croppedImg
 
-def printThatMatrix(matrix, title=None):
-	cmap = ListedColormap(["black","white"])
-	imgplot = plt.imshow(matrix,cmap=cmap)
+def getRandomCroppedImage(img, percent=10):
+	srcLen = img.shape[0]
+	img = np.reshape(img, (img.shape[0]**2))
+	vecLen = img.shape[0]
+	croppedImg = np.copy(img)
+	toGenerate = int(vecLen*((100-percent)/100))
+	randomOrder = np.random.permutation(vecLen)
+	while toGenerate>0:
+		croppedImg[randomOrder[toGenerate]] = zeroToMinusOne(np.random.randint(0,2))
+		toGenerate-=1
+	croppedImg = np.reshape(croppedImg, (srcLen,srcLen))
+	return croppedImg
+
+def getRandomCroppedImageContinuous(img, percent=10):
+	srcLen = img.shape[0]
+	img = np.reshape(img, (img.shape[0]**2))
+	vecLen = img.shape[0]
+	croppedImg = np.copy(img)
+	toGenerate = int(vecLen*((100-percent)/100))
+	randomOrder = np.random.permutation(vecLen)
+	while toGenerate>0:
+		randVal = np.random.randint(4,16)/10*croppedImg[randomOrder[toGenerate]]
+		if randVal < 0:
+			randVal = 0
+		if randVal > 1:
+			randVal = 1
+		croppedImg[randomOrder[toGenerate]] = randVal
+		toGenerate-=1
+	croppedImg = np.reshape(croppedImg, (srcLen,srcLen))
+	return croppedImg
+
+def printThatMatrix(matrix, title=None, gray=False):
+	if(gray==False):
+		cmap = ListedColormap(["black","white"])
+		imgplot = plt.imshow(matrix,cmap=cmap)
+	else:
+		imgplot = plt.imshow(matrix,cmap='gray')
 	if title!=None:
 		plt.title(title)
 		plt.show()
