@@ -75,7 +75,7 @@ def applyNetworkDiscrete(inputImg, networkMatrix, synchronous=False):
 	"""
 	if (synchronous):
 		#return the thresholding of the product of the input image and the network matrix
-		return thresholding_v(np.dot(networkMatrix,inputImg))
+		return thresholding_v(networkMatrix @ inputImg)
 	
 	outputImg = np.copy(inputImg)
 	#choose a random pixel to update

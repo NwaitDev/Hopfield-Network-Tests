@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from PIL import Image
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import src.imageToMatrix as itm
@@ -17,6 +18,11 @@ def threshold(x):
 	return 0
 
 thresholding_v = np.vectorize(threshold)
+
+def exportImage(img, path):
+	img = np.uint8(img*255)
+	img = Image.fromarray(img)
+	img.save(path)
 
 def importImagesFromFolder(folderPath, imgWidth=64, imgHeight=64, imgConvType="blackAndWhite"):
 	"""
@@ -57,7 +63,9 @@ def getRandomCroppedImage(img, percent=10):
 	croppedImg = np.reshape(croppedImg, (srcLen,srcLen))
 	return croppedImg
 
-def getRandomCroppedImageContinuous(img, percent=10):
+def getRandomCroppedImageContinuous(img, percent=10 ,interval=6):
+	if(interval==0):
+		return img
 	srcLen = img.shape[0]
 	img = np.reshape(img, (img.shape[0]**2))
 	vecLen = img.shape[0]
@@ -65,12 +73,12 @@ def getRandomCroppedImageContinuous(img, percent=10):
 	toGenerate = int(vecLen*((100-percent)/100))
 	randomOrder = np.random.permutation(vecLen)
 	while toGenerate>0:
-		randVal = np.random.randint(4,16)/10*croppedImg[randomOrder[toGenerate]]
+		randVal = np.random.randint(10-interval,10+interval)/10*croppedImg[randomOrder[toGenerate-1]]
 		if randVal < 0:
 			randVal = 0
 		if randVal > 1:
 			randVal = 1
-		croppedImg[randomOrder[toGenerate]] = randVal
+		croppedImg[randomOrder[toGenerate-1]] = randVal
 		toGenerate-=1
 	croppedImg = np.reshape(croppedImg, (srcLen,srcLen))
 	return croppedImg
@@ -87,7 +95,7 @@ def printThatMatrix(matrix, title=None, gray=False):
 	else:
 		plt.show()
 
-def PrintMatricesInGrid(matrices):
+def PrintMatricesInGrid(matrices, gray=False):
 
 	mLen = len(matrices)
 	mLenSqrt = np.sqrt(mLen)
@@ -97,8 +105,10 @@ def PrintMatricesInGrid(matrices):
 	cols = len(matrices)//rows
 	if len(matrices)%rows!=0:
 		cols+=1
-	
-	cmap = ListedColormap(["black","white"])
+	if(gray==False):
+		cmap = ListedColormap(["black","white"])
+	else:
+		cmap = 'gray'
 	
 	fig, axes = plt.subplots(rows,cols,figsize=(10,10))
 

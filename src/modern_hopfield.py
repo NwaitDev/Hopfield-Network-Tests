@@ -21,8 +21,8 @@ def retrieveImageContinuous(inputImg, objImg, memories, maxIter=8, minIter=2, st
     
     for i in range(maxIter):
         outputImg = updateSyncContinuous(outputImg, memories, 1)
-    printThatMatrix(np.reshape(outputImg, (dimension,dimension)), "Output image", gray=True)
-    return outputImg
+        printThatMatrix(np.reshape(outputImg, (dimension,dimension)), "Output image", gray=True)
+    return np.reshape(outputImg, (dimension,dimension))
 
 def retrieveImage(inputImg, objImg, memories, synchronous=True, maxIter=8, minIter=2, stepsToPrint=9, dimension=64):
     """
@@ -42,7 +42,6 @@ def retrieveImage(inputImg, objImg, memories, synchronous=True, maxIter=8, minIt
     printThatMatrix(np.reshape(outputImg, (dimension,dimension)), "Output image")
     return outputImg
 
-#fig9
 def energy(img, memories, B=1):
     #return -np.exp(np.log(np.sum((np.tile(img, (len(memories), 1)) * memories)))).sum()
     #x = (np.dot(memories.T,np.tile(img, (len(memories), 1))))
@@ -68,18 +67,19 @@ def energyContinuous(img, memories, B=1):
     N = len(memories)
     x = np.zeros(N)
     for i in range(N):
-        x[i] = np.dot(memories[i],img)
+        x[i] = np.dot(memories[i],img) * 0.05
     racooncav = - lse(B,x)
     M = 0
     for i in range(N):
         M_temp = np.ones(img.shape[0]) @ memories[i]
         if(M_temp > M):
             M = M_temp
-    racoonvex = 0.5 * (img.dot(img) + np.power(M,2)) + 1/B * np.log(N)
+    racoonvex = 0.5 * (np.dot(img,img) + np.power(M,2)) + 1/B * np.log(N)
     return racooncav + racoonvex
 
 def lse(B,x):
-    return 1/B * np.log(np.sum(np.exp(B*x)))
+    y = softmax(x)
+    return 1/B * np.log(np.sum(np.exp(B*y)))
 
 def F(x, n):
     '''Rectified polynomial'''
@@ -91,10 +91,11 @@ def updateSyncContinuous(inputImg, memories, B=1):
 	Updates the image according to the energy function
 	"""
     outputImg = np.copy(inputImg)
-    randomOrder = np.random.permutation(len(inputImg))
-    for i in randomOrder:
-        newState = memories.T @ softmax(B * memories @ outputImg)
-        outputImg = newState
+    windows = 4
+    #randomOrder = np.random.permutation(len(inputImg))
+    #for i in range(1,windows):
+    newState = memories.T @ softmax(B * memories @ outputImg)
+    outputImg = newState
     return outputImg
 
 def softmax(x):
