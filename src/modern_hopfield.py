@@ -1,10 +1,24 @@
 import numpy as np
 import random as rd
+import scipy.special as sp
 from src.lib import *
+
+#vectorized function to reduce values between 0 and 255 to values between 0 and 1
+def normalize(img):
+    img = np.vectorize(lambda x: x / 255)(img)
+    return img
+
+normalize_array = np.vectorize(lambda y : normalize(y))
+reshape = lambda x : np.reshape(x,(28,28))
 
 def loadMemories(path, imgWidth=64, imgHeight=64):
     memories = np.array(importImagesFromFolder(path, imgWidth, imgHeight))
     memories =  memories.reshape(len(memories), imgWidth*imgHeight)
+    return memories
+
+def loadMemoriesContinuousMnist(imgWidth=28, imgHeight=28):
+    mnist = np.load("./img-data/mnist_continuous.npz")
+    memories = np.array(mnist["imgs"])
     return memories
 
 def loadMemoriesContinuous(path, imgWidth=64, imgHeight=64):
@@ -12,7 +26,7 @@ def loadMemoriesContinuous(path, imgWidth=64, imgHeight=64):
     memories = memories.reshape(len(memories), imgWidth*imgHeight)
     return memories
 
-def retrieveImageContinuous(inputImg, objImg, memories, maxIter=8, minIter=2, stepsToPrint=9, dimension=64):
+def retrieveImageContinuous(inputImg, memories, maxIter=8, minIter=2, stepsToPrint=9, dimension=64):
     """
     Retrieves the image from the memories
     """
@@ -20,7 +34,7 @@ def retrieveImageContinuous(inputImg, objImg, memories, maxIter=8, minIter=2, st
     outputImg = np.copy(inputImg)
     
     for i in range(maxIter):
-        outputImg = updateSyncContinuous(outputImg, memories, 1)
+        outputImg = updateSyncContinuous(outputImg, memories, 64)
         printThatMatrix(np.reshape(outputImg, (dimension,dimension)), "Output image", gray=True)
     return np.reshape(outputImg, (dimension,dimension))
 
@@ -67,19 +81,28 @@ def energyContinuous(img, memories, B=1):
     N = len(memories)
     x = np.zeros(N)
     for i in range(N):
-        x[i] = np.dot(memories[i],img) * 0.05
+        x[i] = np.dot(memories[i],img) * 0.1
     racooncav = - lse(B,x)
     M = 0
     for i in range(N):
         M_temp = np.ones(img.shape[0]) @ memories[i]
         if(M_temp > M):
             M = M_temp
+    M = np.sqrt(M)
     racoonvex = 0.5 * (np.dot(img,img) + np.power(M,2)) + 1/B * np.log(N)
     return racooncav + racoonvex
 
 def lse(B,x):
-    y = softmax(x)
-    return 1/B * np.log(np.sum(np.exp(B*y)))
+    return 1/B * np.log(np.sum(np.exp(B*x)))
+
+def energyCustom(img, memories, B=1):
+    N = len(memories)
+    x = np.zeros(N)
+    
+    for i in range(N):
+        x[i] = np.vectorize(lambda x,y : np.abs(x-y))(img,memories[i]).sum()
+
+    return np.argmin(x)
 
 def F(x, n):
     '''Rectified polynomial'''
@@ -91,11 +114,25 @@ def updateSyncContinuous(inputImg, memories, B=1):
 	Updates the image according to the energy function
 	"""
     outputImg = np.copy(inputImg)
-    windows = 4
-    #randomOrder = np.random.permutation(len(inputImg))
-    #for i in range(1,windows):
-    newState = memories.T @ softmax(B * memories @ outputImg)
+    newState = memories.T @ sp.softmax(B * memories @ outputImg)
     outputImg = newState
+    return outputImg
+
+def updateEnergyContinuous(inputImg, memories, B=1):
+    """
+	Updates the image according to the energy function
+	"""
+    outputImg = np.copy(inputImg)
+    randomOrder = np.random.permutation(len(inputImg))
+    for i in randomOrder:
+        modify = rd.random() * 0.5 - 0.25
+        outputImg[i] += modify
+        if(outputImg[i] > 1):
+            outputImg[i] = 1
+        elif(outputImg[i] < 0):
+            outputImg[i] = 0
+        if(energyContinuous(outputImg, memories, B) > energyContinuous(inputImg, memories, B)):
+            outputImg[i] -= modify
     return outputImg
 
 def softmax(x):

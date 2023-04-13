@@ -47,7 +47,7 @@ def getCroppedImage(img, div=2):
 def getCroppedImageContinuous(img, div=2):
 	croppedImg = np.copy(img)
 	for i in range(int(len(img)/div),len(img)) :
-		croppedImg[i] = 0.5
+		croppedImg[i] = np.random.randint(0,100)/100
 	return croppedImg
 
 def getRandomCroppedImage(img, percent=10):
